@@ -1,5 +1,7 @@
 // https://drafts.csswg.org/cssom
 // https://drafts.csswg.org/cssom/#css-object-model
+import "luxe: math" for Math
+
 import "gooey: dom" for Element
 
 class StyleSheet {
@@ -80,4 +82,43 @@ class Declaration {
     else return value
   }
   parentRule { _parent }
+}
+
+class Value {
+  static parse(value: String) {
+    _identifier = null
+    _numeric = 0
+    _color = [0, 0, 0, 0]
+    _unit = Unit.pixels
+  }
+
+  angle { Math.wrap_radians(_angle) }
+  color { [0, 0, 0, 0] }
+  identifier { null }
+  number { 0 }
+  length { 0 }
+  percentage { 0 }
+  time { 0 }
+}
+
+class Unit {
+  static degrees = "deg"
+  static radians = "rad"
+  static turn = "turn"
+  static capHeight = "cap"
+  static zeroAdvanceMeasure = "ch"
+  static fontSize = "em"
+  static rootFontSize = "rem"
+  static xHeight = "ex"
+  static lineHeight = "lh"
+  static rootLineHeight = "rlh"
+  static pixels = "px"
+  static centimeter = "cm"
+  static millimeter = "mm"
+  static inch = "in"
+  static pica = "pc"
+  static point = "pt"
+  static percentage = "%"
+  static seconds = "s"
+  static milliseconds = "ms"
 }
