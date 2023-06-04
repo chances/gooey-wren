@@ -1,5 +1,11 @@
 // https://dom.spec.whatwg.org/#interface-document
-import "gooey: dom" for Node
-class Document is Node {}
+import "gooey: dom" for Event, Node, Element
+class Document is Node {
+  documentElement { null }
+
+  createElement(name: String) { null }
+  createDocumentFragment() { DocumentFragment.new() }
+  createEvent(name: String) { Event.new(name) }
+}
 
 class DocumentFragment is Node {}
