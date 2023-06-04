@@ -1,6 +1,19 @@
 // https://dom.spec.whatwg.org/#element
 import "gooey: dom" for Node
 
+// https://dom.spec.whatwg.org/#interface-attr
+class Attr is Node {
+  construct new(name: String) {
+    _name = name
+    _value = ""
+  }
+
+  name { _name }
+  value { _value }
+  value=(value) { _value = value }
+}
+
+// https://dom.spec.whatwg.org/#element
 class Element is Node {
   construct new() {
     _id = null
