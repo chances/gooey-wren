@@ -1,0 +1,6 @@
+.luxe/
+_luxe.data
+_luxe.deploy
+log*.txt
+.log*.txt
+assets/asset.wren
