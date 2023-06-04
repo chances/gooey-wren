@@ -1,5 +1,5 @@
-// See https://drafts.csswg.org/cssom
-// See https://drafts.csswg.org/cssom/#css-object-model
+// https://drafts.csswg.org/cssom
+// https://drafts.csswg.org/cssom/#css-object-model
 import "gooey: dom" for Element
 
 class StyleSheet {
@@ -25,7 +25,7 @@ class StyleSheet {
   disabled { _disabled }
   disabled=(value: Bool) { _disabled = value }
 
-  // See https://drafts.csswg.org/cssom/#dom-cssstylesheet-insertrule
+  // https://drafts.csswg.org/cssom/#dom-cssstylesheet-insertrule
   insertRule(rule: String, index: Num) { -1 }
   deleteRule(index: Num) {}
 
@@ -33,7 +33,7 @@ class StyleSheet {
   // TODO: replaceSync(USVString text) {}
 }
 
-// See https://drafts.csswg.org/cssom/#cssrule
+// https://drafts.csswg.org/cssom/#cssrule
 class Rule {
   construct new() {
     _css = ""
@@ -51,7 +51,7 @@ class Rule {
   style { _style }
 }
 
-// See https://drafts.csswg.org/cssom/#cssstyledeclaration
+// https://drafts.csswg.org/cssom/#cssstyledeclaration
 class Declaration {
   construct new() {
     _css = ""
@@ -64,7 +64,7 @@ class Declaration {
   length { _declarations.count }
   item(index: Num) { _declarations.keys[index] }
   getPropertyValue(property: String) { _declarations[property] }
-  // See https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-getpropertypriority
+  // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-getpropertypriority
   getPropertyPriority(property: String) {
     if (_declarationImportance[property]) return "important"
     return ""

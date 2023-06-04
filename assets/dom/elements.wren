@@ -1,4 +1,4 @@
-// See https://dom.spec.whatwg.org/#element
+// https://dom.spec.whatwg.org/#element
 import "gooey: dom" for Node
 
 class Element is Node {
@@ -23,7 +23,7 @@ class Element is Node {
   getAttribute(qualifiedName: String) { null }
   setAttribute(qualifiedName: String, value: String) {}
   removeAttribute(qualifiedName: String) {}
-  // See https://dom.spec.whatwg.org/#dom-element-toggleattribute
+  // https://dom.spec.whatwg.org/#dom-element-toggleattribute
   boolean toggleAttribute(qualifiedName: String, force: Bool) {
     var attr = this.getAttribute(qualifiedName)
     if (attr == null && force) {

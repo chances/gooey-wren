@@ -1,5 +1,5 @@
-// See https://dom.spec.whatwg.org/#event
+// https://dom.spec.whatwg.org/#event
 class Event {}
 
-// See https://dom.spec.whatwg.org/#eventtarget
+// https://dom.spec.whatwg.org/#eventtarget
 class EventTarget {}

@@ -1,6 +1,6 @@
-// See https://dom.spec.whatwg.org/#nodes
+// https://dom.spec.whatwg.org/#nodes
 
-// See https://dom.spec.whatwg.org/#node
+// https://dom.spec.whatwg.org/#node
 import "gooey: dom" for EventTarget
 class Node is EventTarget {
   construct new() {
@@ -15,7 +15,7 @@ class Node is EventTarget {
   static var TEXT_NODE = 3
   static var CDATA_SECTION_NODE = 4
   static var ENTITY_REFERENCE_NODE = 5
-  static var ENTITY_NODE = 6 
+  static var ENTITY_NODE = 6
   static var PROCESSING_INSTRUCTION_NODE = 7
   static var COMMENT_NODE = 8
   static var DOCUMENT_NODE = 9
@@ -24,7 +24,7 @@ class Node is EventTarget {
 
   nodeType { _type }
   name { _name }
-  
+
   var baseURI = ""
 
   isConnected { false }
@@ -44,7 +44,7 @@ class Node is EventTarget {
   cloneNode(deep: Bool) { null }
   isEqualNode(otherNode: Node) { false }
   isSameNode(otherNode: Node) { false }
-  
+
   static var DOCUMENT_POSITION_DISCONNECTED = 0x01
   static var DOCUMENT_POSITION_PRECEDING = 0x02
   static var DOCUMENT_POSITION_FOLLOWING = 0x04
