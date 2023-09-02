@@ -1,3 +1,5 @@
 name: gooey
 description: "Wren library implementing a subset of the W3C Web Platform"
 author: Chance Snow <git@chancesnow.me>
+tests: src/**/*.spec.wren
+devDependencies: [wren-assert]

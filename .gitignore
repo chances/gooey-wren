@@ -1,3 +1,7 @@
+# Wren
+wren_modules/
+
+# Luxe
 .luxe/
 _luxe.data
 _luxe.deploy
