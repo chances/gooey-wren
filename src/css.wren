@@ -2,7 +2,7 @@
 // https://drafts.csswg.org/cssom/#css-object-model
 import "luxe: math" for Math
 
-import "gooey: dom" for Element
+import "../dom" for Element
 
 class StyleSheet {
   construct new() {

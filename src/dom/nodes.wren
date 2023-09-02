@@ -1,7 +1,8 @@
 // https://dom.spec.whatwg.org/#nodes
 
 // https://dom.spec.whatwg.org/#node
-import "gooey: dom" for EventTarget
+import "../dom" for EventTarget
+
 class Node is EventTarget {
   construct new() {
     _type = null

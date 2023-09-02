@@ -1,5 +1,5 @@
 // https://dom.spec.whatwg.org/#element
-import "gooey: dom" for Node
+import "../dom" for Node
 
 // https://dom.spec.whatwg.org/#interface-attr
 class Attr is Node {

@@ -1,5 +1,6 @@
 // https://dom.spec.whatwg.org/#interface-document
-import "gooey: dom" for Event, Node, Element
+import "../dom" for Event, Node, Element
+
 class Document is Node {
   documentElement { null }
 
