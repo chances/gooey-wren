@@ -1,8 +1,7 @@
 // https://drafts.csswg.org/cssom
 // https://drafts.csswg.org/cssom/#css-object-model
-import "luxe: math" for Math
-
 import "../dom" for Element
+import "../math" for Math
 
 class StyleSheet {
   construct new() {
@@ -88,6 +87,7 @@ class Value {
   static parse(value: String) {
     _identifier = null
     _numeric = 0
+    _angle = 0
     _color = [0, 0, 0, 0]
     _unit = Unit.pixels
   }
