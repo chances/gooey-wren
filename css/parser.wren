@@ -17,7 +17,7 @@ class Grammar {
   //   ;
   // Purposefully omitted charset specifier
   static stylesheet {
-    var comments = Magpie.zeroOrMore(Magpie.or([
+    var cData = Magpie.zeroOrMore(Magpie.or([
       Magpie.sequence(Tokens.cdo, Magpie.zeroOrMore(Tokens.s)),
       Magpie.sequence(Tokens.cdc, Magpie.zeroOrMore(Tokens.s))
     ]))
@@ -32,12 +32,12 @@ class Grammar {
       // Imports
       Magpie.zeroOrMore(Magpie.sequence([
         Grammar.import_,
-        comments
+        cData
       ])),
       // Rulesets, Media Queries, and Pages
       Magpie.zeroOrMore(Magpie.sequence([
         Magpie.or([Grammar.ruleset, Grammar.media, Grammar.page]),
-        comments
+        cData
       ]))
     ])
   }
@@ -150,18 +150,14 @@ class Grammar {
       Magpie.zeroOrMore(Tokens.s)
     ])
   }
-  //   : simple_selector [ combinator selector | S+ [ combinator? selector ]? ]?
+  //   : simple_selector
+  //   | combinatorial_selector
   //   ;
   static selector {
-    Magpie.sequence(Grammar.simple_selector, Magpie.optional(
-      Magpie.or([
-        Magpie.sequence([Grammar.combinator, Grammar.selector]),
-        Magpie.sequence([
-          Magpie.zeroOrMore(Tokens.s),
-          Magpie.sequence(Magpie.optional(Grammar.combinator), Grammar.selector)
-        ])
-      ])
-    ))
+    Magpie.or(
+      Grammar.simple_selector,
+      Grammar.combinatorial_selector
+    )
   }
   //   : element_name [ HASH | class | attrib | pseudo ]*
   //   | [ HASH | class | attrib | pseudo ]+
@@ -174,9 +170,23 @@ class Grammar {
       Grammar.pseudo,
     ])
     return Magpie.or(
-      Magpie.sequence([Grammar.element_name, Magpie.zeroOrMore(idClassAttrPseudo)]),
+      Magpie.sequence(Grammar.element_name, Magpie.zeroOrMore(idClassAttrPseudo)),
       Magpie.oneOrMore(idClassAttrPseudo)
     )
+  }
+  //   : combinator selector
+  //   | S+ [ combinator? selector ]?
+  //   ;
+  static combinatorial_selector {
+    // FIXME: Tests hang and leak memory. There's left-recursion here.
+    // Magpie.or([
+    //   Magpie.sequence([Grammar.combinator, Grammar.selector]),
+    //   Magpie.sequence([
+    //     Magpie.zeroOrMore(Tokens.s),
+    //     Magpie.sequence(Magpie.optional(Grammar.combinator), Grammar.selector)
+    //   ])
+    // ])
+    Magpie.fail("Unimplemented CSS feature")
   }
   //   : '.' IDENT
   //   ;
@@ -204,13 +214,13 @@ class Grammar {
   //   : property ':' S* expr prio?
   //   ;
   static declaration {
-    Magpie.sequence(
+    Magpie.sequence([
       Grammar.property,
       Magpie.char(":"),
       Magpie.zeroOrMore(Tokens.s),
       Grammar.expr,
       Magpie.optional(Grammar.prio)
-    )
+    ])
   }
   //   : IMPORTANT_SYM S*
   //   ;
