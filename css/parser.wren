@@ -1,4 +1,6 @@
-import "wren-magpie/magpie" for Magpie
+import "wren-magpie/magpie" for Magpie, Result
+
+import "../css" for StyleSheet, Rule, Declaration, Value, Unit
 
 class Parser {
   construct new() {}
@@ -45,7 +47,7 @@ class Grammar {
   //     [STRING|URI] S* media_list? ';' S*
   //   ;
   static import_ {
-    Magpie.sequence([
+    return Magpie.sequence([
       Magpie.str("import"),
       Magpie.zeroOrMore(Tokens.s),
       Magpie.or(Tokens.string, Tokens.uri),
@@ -58,7 +60,7 @@ class Grammar {
   //   : MEDIA_SYM S* media_list '{' S* ruleset* '}' S*
   //   ;
   static media {
-    Magpie.sequence([
+    return Magpie.sequence([
       Magpie.str("media"),
       Magpie.zeroOrMore(Tokens.s),
       Magpie.one(Grammar.media_list),
@@ -72,7 +74,7 @@ class Grammar {
   //   : medium [ COMMA S* medium]*
   //   ;
   static media_list {
-    Magpie.sequence([
+    return Magpie.sequence([
       Magpie.one(Grammar.medium),
       Magpie.optional([
         Magpie.char(","),
@@ -83,46 +85,47 @@ class Grammar {
   }
   //   : IDENT S*
   //   ;
-  static medium {
-    Magpie.sequence(Tokens.ident, Magpie.zeroOrMore(Tokens.s))
-  }
+  static medium { Magpie.sequence(Tokens.ident, Magpie.zeroOrMore(Tokens.s)) }
   //   : PAGE_SYM S* pseudo_page?
   //     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
   //   ;
-  static page {
-    Magpie.fail("Unimplemented CSS feature")
-  }
+  static page { Magpie.fail("Unimplemented CSS feature") }
   //   : ':' IDENT S*
   //   ;
   static pseudo_page {
-    Magpie.sequence([Magpie.char(":"), Tokens.ident, Magpie.zeroOrMore(Tokens.s)])
+    return Magpie.sequence([Magpie.char(":"), Tokens.ident, Magpie.zeroOrMore(Tokens.s)])
   }
   //   : '/' S* | ',' S*
   //   ;
   static operator {
-    Magpie.sequence(
-      Magpie.or(Magpie.char("/"), Magpie.char(",")),
+    return Magpie.sequence(
+      Magpie.or(Magpie.char("/").tag("slash"), Magpie.char(",").tag("comma")),
       Magpie.zeroOrMore(Tokens.s)
     )
   }
-  //   : '+' S*
+  //   : '~' S*
+  //   | '+' S*
   //   | '>' S*
   //   ;
   static combinator {
-    Magpie.sequence(
-      Magpie.or(Magpie.char("+"), Magpie.char(">")),
+    return Magpie.sequence(
+      Magpie.or(
+        Magpie.char("~").tag("sibling:general"),
+        Magpie.char("+").tag("sibling:adjacent"),
+        Magpie.char(">").tag("child")
+      ),
       Magpie.zeroOrMore(Tokens.s)
     )
   }
   //   : '-' | '+'
   //   ;
   static unary_operator {
-    Magpie.or(Magpie.char("-"), Magpie.char("+"))
+    return Magpie.or(Magpie.char("-"), Magpie.char("+"))
   }
   //   : IDENT S*
   //   ;
   static property {
-    Magpie.sequence(
+    return Magpie.sequence(
       Magpie.one(Tokens.ident),
       Magpie.zeroOrMore(Tokens.s)
     )
@@ -131,13 +134,13 @@ class Grammar {
   //     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
   //   ;
   static ruleset {
-    Magpie.sequence([
+    return Magpie.sequence([
       Grammar.selector,
       Magpie.zeroOrMore(Magpie.sequence([
         Magpie.char(","),
         Magpie.zeroOrMore(Tokens.s),
         Grammar.selector,
-      ])),
+      ])).tag("list"),
       Magpie.char("{"),
       Magpie.zeroOrMore(Tokens.s),
       Magpie.optional(Grammar.declaration),
@@ -154,20 +157,23 @@ class Grammar {
   //   | combinatorial_selector
   //   ;
   static selector {
-    Magpie.or(
+    return Magpie.or(
       Grammar.simple_selector,
       Grammar.combinatorial_selector
-    )
+    ).map {|result|
+      // TODO: Create a Selector structure
+      return result
+    }
   }
   //   : element_name [ HASH | class | attrib | pseudo ]*
   //   | [ HASH | class | attrib | pseudo ]+
   //   ;
   static simple_selector {
     var idClassAttrPseudo = Magpie.or([
-      Tokens.hash,
-      Grammar.class_,
-      Grammar.attrib,
-      Grammar.pseudo,
+      Tokens.hash.tag("id"),
+      Grammar.class_.tag("class"),
+      Grammar.attrib.tag("attr"),
+      Grammar.pseudo.tag("pseudo"),
     ])
     return Magpie.or(
       Magpie.sequence(Grammar.element_name, Magpie.zeroOrMore(idClassAttrPseudo)),
@@ -186,51 +192,57 @@ class Grammar {
     //     Magpie.sequence(Magpie.optional(Grammar.combinator), Grammar.selector)
     //   ])
     // ])
-    Magpie.fail("Unimplemented CSS feature")
+    return Magpie.fail("Unimplemented CSS feature")
   }
   //   : '.' IDENT
   //   ;
   static class_ {
-    Magpie.sequence(
+    return Magpie.sequence(
       Magpie.char("."),
       Magpie.one(Tokens.ident)
-    )
+    ).map {|result| result[0].rewrite(result[1..-1].map {|r| r.lexeme }.join()) }
   }
   //   : IDENT | '*'
   //   ;
   static element_name {
-    Magpie.or(
-      Magpie.one(Tokens.ident),
-      Magpie.char("*")
+    return Magpie.or(
+      Magpie.one(Tokens.ident).join.tag("element"),
+      Magpie.char("*").tag("universal")
     )
   }
   //   : '[' S* IDENT S* [ [ '=' | INCLUDES | DASHMATCH ] S*
   //     [ IDENT | STRING ] S* ]? ']'
   //   ;
-  static attrib {}
+  static attrib { Magpie.fail("Unimplemented CSS feature") }
   //   : ':' [ IDENT | FUNCTION S* [IDENT S*]? ')' ]
   //   ;
-  static pseudo {}
+  static pseudo { Magpie.fail("Unimplemented CSS feature") }
   //   : property ':' S* expr prio?
   //   ;
   static declaration {
-    Magpie.sequence([
+    return Magpie.sequence([
       Grammar.property,
       Magpie.char(":"),
       Magpie.zeroOrMore(Tokens.s),
       Grammar.expr,
+      // FIXME: Grammar.expr.tag("expr"),
       Magpie.optional(Grammar.prio)
-    ])
+      // FIXME: Magpie.optional(Grammar.prio).tag("prio")
+    ]).map {|result|
+      return {
+        name: result[0].token,
+        value: result.where {|r| r.tag == "expr" },
+        prio: result.where {|r| r.tag == "prio" }.count > 0
+      }
+    }
   }
   //   : IMPORTANT_SYM S*
   //   ;
-  static prio {
-    Magpie.sequence(Tokens.important, Magpie.zeroOrMore(Tokens.s))
-  }
+  static prio { Magpie.sequence(Tokens.important, Magpie.zeroOrMore(Tokens.s)) }
   //   : term [ operator? term ]*
   //   ;
   static expr {
-    Magpie.sequence(
+    return Magpie.sequence(
       Grammar.term,
       Magpie.zeroOrMore(Magpie.sequence(
         Magpie.optional(Grammar.operator), Grammar.term
@@ -242,13 +254,11 @@ class Grammar {
   //       TIME S* | FREQ S* ]
   //   | STRING S* | IDENT S* | URI S* | hexcolor | function
   //   ;
-  static term {
-    Magpie.fail("Unimplemented CSS feature")
-  }
+  static term { Magpie.fail("Unimplemented CSS feature") }
   //   : FUNCTION S* expr ')' S*
   //   ;
   static function {
-    Magpie.sequence([
+    return Magpie.sequence([
       Tokens.function,
       Magpie.zeroOrMore(Tokens.s),
       Grammar.expr,
@@ -263,9 +273,7 @@ class Grammar {
    */
   //   : HASH S*
   //   ;
-  static hexcolor {
-    Magpie.sequence(Tokens.hash, Magpie.zeroOrMore(Tokens.s))
-  }
+  static hexcolor { Magpie.sequence(Tokens.hash, Magpie.zeroOrMore(Tokens.s)) }
 }
 
 // See https://www.w3.org/TR/CSS21/grammar.html#scanner
@@ -273,7 +281,7 @@ class Grammar {
 class Tokens {
   // [0-9a-f]
   static hex {
-    Magpie.or(
+    return Magpie.or(
       Magpie.digit,
       Magpie.or(
         Magpie.charFrom(Magpie.charRangeFrom("A", "F")),
@@ -282,26 +290,16 @@ class Tokens {
     )
   }
 
-  static nonascii {
-    Magpie.charFrom(240..377)
-  }
-
-  static cdo {
-    Magpie.str("<!--")
-  }
-
-  static cdc {
-    Magpie.str("-->")
-  }
+  static nonascii { Magpie.charFrom(240..377) }
+  static cdo { Magpie.str("<!--") }
+  static cdc { Magpie.str("-->") }
 
   // \\{h}{1,6}(\r\n|[ \t\r\n\f])?
-  static unicode {
-    Magpie.fail("Unimplemented token")
-  }
+  static unicode { Magpie.fail("Unimplemented token") }
 
   // {unicode}|\\[^\r\n\f0-9a-f]
   static escape {
-    Magpie.or(
+    return Magpie.or(
       Tokens.unicode,
       Magpie.sequence([
         Magpie.char("\\"),
@@ -317,7 +315,7 @@ class Tokens {
   // [_a-z]|{nonascii}|{escape}
   // Purposefully ommitting {escape} for simplicity
   static nmstart {
-    Magpie.or([
+    return Magpie.or([
       Magpie.or([
         Magpie.char("_"),
         Magpie.charFrom(Magpie.charRangeFrom("A", "Z")),
@@ -330,7 +328,7 @@ class Tokens {
   // [_a-z0-9-]|{nonascii}|{escape}
   // Purposefully ommitting {escape} for simplicity
   static nmchar {
-    Magpie.or([
+    return Magpie.or([
       Magpie.or([
         Magpie.char("_"),
         Magpie.charFrom(Magpie.charRangeFrom("A", "Z")),
@@ -345,7 +343,7 @@ class Tokens {
   // "url("{w}{string}{w}")"
   // "url("{w}{url}{w}")"
   static uri {
-    Magpie.sequence([
+    return Magpie.sequence([
       Magpie.str("url("),
       Tokens.w,
       Magpie.or(Tokens.string, Tokens.url),
@@ -359,39 +357,33 @@ class Tokens {
   // TODO: static comment {  \/\*[^*]*\*+([^/*][^*]*\*+)*\/ }
   // -?{nmstart}{nmchar}*
   static ident {
-    Magpie.sequence([
+    return Magpie.sequence([
       Magpie.optional(Magpie.char("-")),
       Tokens.nmstart,
       Magpie.zeroOrMore(Tokens.nmchar)
     ])
   }
 
-  static hash {
-    Magpie.sequence(Magpie.char("#"), Tokens.name)
-  }
+  static hash { Magpie.sequence(Magpie.char("#"), Tokens.name) }
 
   static important {
     // TODO: Support case-insensitivity here
-    Magpie.str("!important")
+    return Magpie.str("!important")
   }
 
   // {nmchar}+
-  static name {
-    Magpie.oneOrMore(Tokens.nmchar)
-  }
+  static name { Magpie.oneOrMore(Tokens.nmchar) }
 
   // [0-9]+|[0-9]*"."[0-9]+
   static num {
-    Magpie.or([
+    return Magpie.or([
       Magpie.oneOrMore(Magpie.digit),
       Magpie.sequence([Magpie.zeroOrMore(Magpie.digit), Magpie.str("."), Magpie.oneOrMore(Magpie.digit)])
     ])
   }
 
   // {string1}|{string2}
-  static string {
-    Magpie.fail("Unimplemented token")
-  }
+  static string { Magpie.fail("Unimplemented token") }
 
   // ([!#$%&*-~]|{nonascii}|{escape})*
   static url {
@@ -400,12 +392,12 @@ class Tokens {
       Magpie.char("&"), Magpie.char("*"), Magpie.char("-"), Magpie.char("~")
     ]
     // TODO: Add above escape hatch to the or clause
-    Magpie.zeroOrMore(Magpie.or(Tokens.nonascii, Tokens.escape))
+    return Magpie.zeroOrMore(Magpie.or(Tokens.nonascii, Tokens.escape))
   }
 
   // [ \t\r\n\f]+
   static s {
-    Magpie.oneOrMore(Magpie.or([
+    return Magpie.oneOrMore(Magpie.or([
       Magpie.char(20), // U+0020 SPACE
       Magpie.char("\t"),
       Magpie.char("\r"),
@@ -415,13 +407,11 @@ class Tokens {
   }
 
   // {s}?
-  static w {
-    Magpie.optional(Tokens.s)
-  }
+  static w { Magpie.optional(Tokens.s) }
 
   // \n|\r\n|\r|\f
   static nl {
-    Magpie.or([
+    return Magpie.or([
       Magpie.char("\n"),
       Magpie.str("\r\n"),
       Magpie.char("\r"),
