@@ -1,7 +1,7 @@
 // https://drafts.csswg.org/cssom
 // https://drafts.csswg.org/cssom/#css-object-model
-import "../dom" for Element
-import "../math" for Math
+import "./dom" for Element
+import "./math" for Math
 
 class StyleSheet {
   construct new() {
