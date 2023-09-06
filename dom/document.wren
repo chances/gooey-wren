@@ -4,9 +4,13 @@ import "../dom" for Event, Node, Element
 class Document is Node {
   documentElement { null }
 
-  createElement(name: String) { null }
+  // Params:
+  // name: String
+  createElement(name) { null }
   createDocumentFragment() { DocumentFragment.new() }
-  createEvent(name: String) { Event.new(name) }
+  // Params:
+  // name: String
+  createEvent(name) { Event.new(name) }
 }
 
 class DocumentFragment is Node {}

@@ -1,6 +1,8 @@
 // https://dom.spec.whatwg.org/#event
 class Event {
-  construct new(name: String) {
+  // Params:
+  // name: String
+  construct new(name) {
     _name = name
   }
 }

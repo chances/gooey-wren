@@ -11,22 +11,20 @@ class Node is EventTarget {
     _children = []
   }
 
-  static var ELEMENT_NODE = 1
-  static var ATTRIBUTE_NODE = 2
-  static var TEXT_NODE = 3
-  static var CDATA_SECTION_NODE = 4
-  static var ENTITY_REFERENCE_NODE = 5
-  static var ENTITY_NODE = 6
-  static var PROCESSING_INSTRUCTION_NODE = 7
-  static var COMMENT_NODE = 8
-  static var DOCUMENT_NODE = 9
-  static var DOCUMENT_TYPE_NODE = 10
-  static var DOCUMENT_FRAGMENT_NODE = 11
+  static ELEMENT_NODE { 1 }
+  static ATTRIBUTE_NODE { 2 }
+  static TEXT_NODE { 3 }
+  static CDATA_SECTION_NODE { 4 }
+  static ENTITY_REFERENCE_NODE { 5 }
+  static ENTITY_NODE { 6 }
+  static PROCESSING_INSTRUCTION_NODE { 7 }
+  static COMMENT_NODE { 8 }
+  static DOCUMENT_NODE { 9 }
+  static DOCUMENT_TYPE_NODE { 10 }
+  static DOCUMENT_FRAGMENT_NODE { 11 }
 
   nodeType { _type }
   name { _name }
-
-  var baseURI = ""
 
   isConnected { false }
   ownerDocument { null }
@@ -42,41 +40,69 @@ class Node is EventTarget {
 
   textContent { "" }
 
-  cloneNode(deep: Bool) { null }
-  isEqualNode(otherNode: Node) { false }
-  isSameNode(otherNode: Node) { false }
+  // Params:
+  // deep: Bool
+  cloneNode(deep) { null }
+  // Params:
+  // otherNode: Node
+  // Returns: Whether the given `Node` is semantically equal to this node.
+  isEqualNode(otherNode) { false }
+  // Params:
+  // otherNode: Node
+  // Returns: Whether the given `Node` is this node.
+  isSameNode(otherNode) { false }
 
-  static var DOCUMENT_POSITION_DISCONNECTED = 0x01
-  static var DOCUMENT_POSITION_PRECEDING = 0x02
-  static var DOCUMENT_POSITION_FOLLOWING = 0x04
-  static var DOCUMENT_POSITION_CONTAINS = 0x08
-  static var DOCUMENT_POSITION_CONTAINED_BY = 0x10
-  static var DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20
-  compareDocumentPosition(other: Node) { DOCUMENT_POSITION_DISCONNECTED }
-  contains(other: Node) { false }
+  static DOCUMENT_POSITION_DISCONNECTED { 0x01 }
+  static DOCUMENT_POSITION_PRECEDING { 0x02 }
+  static DOCUMENT_POSITION_FOLLOWING { 0x04 }
+  static DOCUMENT_POSITION_CONTAINS { 0x08 }
+  static DOCUMENT_POSITION_CONTAINED_BY { 0x10 }
+  static DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC { 0x20 }
+  // Params:
+  // other: Node
+  compareDocumentPosition(other) { Node.DOCUMENT_POSITION_DISCONNECTED }
 
-  insertBefore(node: Node, child: Node) {
+  // Params:
+  // other: Node
+  // Returns: Whether the given node is a child of this `Node`.
+  contains(other) { false }
+
+  // Params:
+  // node: Node
+  // child: Node
+  // Returns Node that was inserted before the given `child`.
+  insertBefore(node, child) {
     var childIndex = _children.indexOf(child)
     if (childIndex == -1) return node
     _children.insert(childIndex - 1, node)
-    node._parent = this
+    // FIXME: node._parent = this
     return node
   }
-  appendChild(node: Node) {
+  // Params:
+  // node: Node
+  // Returns Node that was appended.
+  appendChild(node) {
     _children.add(node)
-    node._parent = this
+    // FIXME: node._parent = this
     return node
   }
-  replaceChild(node: Node, child: Node) {
+  // Params:
+  // node: Node
+  // child: Node
+  // Returns: Node that replaced the given `child`.
+  replaceChild(node, child) {
     var childIndex = _children.indexOf(child)
     if (childIndex == -1) return node
     _children.removeAt(childIndex)
-    child._parent = null
+    // FIXME: child._parent = null
     _children.insert(childIndex, node)
-    node._parent = this
+    // FIXME: node._parent = this
     return node
   }
-  removeChild(child: Node) {
+  // Params:
+  // child: Node
+  // Returns: Node that was removed.
+  removeChild(child) {
     var childIndex = _children.indexOf(child)
     if (childIndex == -1) return child
     _children.removeAt(childIndex)

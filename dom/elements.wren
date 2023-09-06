@@ -3,7 +3,9 @@ import "../dom" for Node
 
 // https://dom.spec.whatwg.org/#interface-attr
 class Attr is Node {
-  construct new(name: String) {
+  // Params:
+  // name: String
+  construct new(name) {
     _name = name
     _value = ""
   }
@@ -25,26 +27,45 @@ class Element is Node {
   tagName { _tag }
 
   id { _id }
-  id=(value: String) { _id = value }
+  // Params:
+  // value: String
+  id=(value) { _id = value }
   className { _className }
-  className=(value: String) { _className = value }
+  // Params:
+  // value: String
+  className=(value) { _className = value }
   classList { _className.split(" ") }
 
   hasAttributes() { _attributes.count > 0 }
   attributes { _attributes }
   getAttributeNames() { _attributes.keys }
-  getAttribute(qualifiedName: String) { null }
-  setAttribute(qualifiedName: String, value: String) {}
-  removeAttribute(qualifiedName: String) {}
+  // Params:
+  // qualifiedName: String
+  getAttribute(qualifiedName) { null }
+  // Params:
+  // qualifiedName: String
+  // value: String
+  setAttribute(qualifiedName, value) {}
+  // Params:
+  // qualifiedName: String
+  removeAttribute(qualifiedName) {}
   // https://dom.spec.whatwg.org/#dom-element-toggleattribute
-  boolean toggleAttribute(qualifiedName: String, force: Bool) {
+  // Params:
+  // qualifiedName: String
+  // force: Bool
+  // Returns: Whether the attribute was set, `false` if it was unset.
+  toggleAttribute(qualifiedName, force) {
     var attr = this.getAttribute(qualifiedName)
     if (attr == null && force) {
       _attributes[qualifiedName] = ""
       return true
-    } else if (attr == null) { return false }
+    }
+    if (attr == null) return false
     _attributes.remove(qualifiedName)
     return true
   }
-  hasAttribute(qualifiedName: String) { _attributes.containsKey(qualifiedName) }
+  // Params:
+  // qualifiedName: String
+  // Returns: Whether this element has an attribute with the given name.
+  hasAttribute(qualifiedName) { _attributes.containsKey(qualifiedName) }
 }
