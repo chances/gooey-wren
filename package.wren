@@ -5,8 +5,7 @@ class Package is WrenPackage {
   name { "gooey" }
   dependencies {
     return [
-      Dependency.new("wren-assert", "v1.1.2", "https://github.com/RobLoach/wren-assert.git"),
-      Dependency.new("wren-magpie", "v0.4.0", "https://github.com/chances/wren-magpie.git")
+      Dependency.new("wren-assert", "v1.1.2", "https://github.com/RobLoach/wren-assert.git")
     ]
   }
 }
