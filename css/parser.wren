@@ -36,7 +36,7 @@ class Tokens {
     )
   }
   // [_a-z]|{nonascii}|{escape}
-  // Purposefully ommitting {escape} for simplicity
+  // Purposefully omitting {escape} for simplicity
   static nmstart {
     Magpie.or([
       Magpie.or([
@@ -48,7 +48,7 @@ class Tokens {
     ])
   }
   // [_a-z0-9-]|{nonascii}|{escape}
-  // Purposefully ommitting {escape} for simplicity
+  // Purposefully omitting {escape} for simplicity
   static nmchar {
     Magpie.or([
       Magpie.or([
