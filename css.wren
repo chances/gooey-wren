@@ -23,12 +23,20 @@ class StyleSheet {
   cssRules { _rules }
   title { _title }
   media { _media }
+  /// Returns: Bool
   disabled { _disabled }
-  disabled=(value: Bool) { _disabled = value }
+  /// Params: value: Bool
+  /// ditto
+  disabled=(value) { _disabled = value }
 
-  // https://drafts.csswg.org/cssom/#dom-cssstylesheet-insertrule
-  insertRule(rule: String, index: Num) { -1 }
-  deleteRule(index: Num) {}
+  /// Params:
+  /// rule: String
+  /// index: Num
+  /// Returns: Num
+  /// See_Also: https://drafts.csswg.org/cssom/#dom-cssstylesheet-insertrule
+  insertRule(rule, index) { -1 }
+  /// Params: index: Num
+  deleteRule(index) {}
 
   // TODO: Promise<CSSStyleSheet> replace(USVString text);
   // TODO: replaceSync(USVString text) {}
@@ -38,7 +46,7 @@ class StyleSheet {
 class Rule {
   construct new() {
     _css = ""
-    _parent = null;
+    _parent = null
     _parentStyleSheet = null
     _selectors = []
     _style = null
@@ -56,35 +64,48 @@ class Rule {
 class Declaration {
   construct new() {
     _css = ""
-    _parent = null;
+    _parent = null
     _declarations = {}
     _declarationImportance = {}
   }
 
   cssText { _css }
   length { _declarations.count }
-  item(index: Num) { _declarations.keys[index] }
-  getPropertyValue(property: String) { _declarations[property] }
+  /// Params: index: Num
+  /// Returns: Any
+  item(index) { _declarations.keys[index] }
+  /// Params: property: String
+  /// Returns: Any
+  getPropertyValue(property) { _declarations[property] }
   // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-getpropertypriority
-  getPropertyPriority(property: String) {
+  /// Params: property: String
+  /// Returns: String
+  getPropertyPriority(property) {
     if (_declarationImportance[property]) return "important"
     return ""
   }
-  setProperty(property: String, value: String, priority: String) {
-    _declarations[property] = value;
+  /// Params:
+  /// property: String
+  /// value: String
+  /// priority: String
+  setProperty(property, value, priority) {
+    _declarations[property] = value
     if (priority == "important") _declarationImportance[property] = true
     return
   }
-  removeProperty(property: String) {
+  /// Params: property: String
+  /// Returns: Null | Any
+  removeProperty(property) {
     var value = _declarations.remove(property)
-    if (value == null) return ""
-    else return value
+    if (value == null) return null
+    return value
   }
   parentRule { _parent }
 }
 
 class Value {
-  static parse(value: String) {
+  /// Params: value: String
+  construct parse(value) {
     _identifier = null
     _numeric = 0
     _angle = 0
@@ -102,23 +123,23 @@ class Value {
 }
 
 class Unit {
-  static degrees = "deg"
-  static radians = "rad"
-  static turn = "turn"
-  static capHeight = "cap"
-  static zeroAdvanceMeasure = "ch"
-  static fontSize = "em"
-  static rootFontSize = "rem"
-  static xHeight = "ex"
-  static lineHeight = "lh"
-  static rootLineHeight = "rlh"
-  static pixels = "px"
-  static centimeter = "cm"
-  static millimeter = "mm"
-  static inch = "in"
-  static pica = "pc"
-  static point = "pt"
-  static percentage = "%"
-  static seconds = "s"
-  static milliseconds = "ms"
+static degrees { "deg" }
+  static radians { "rad" }
+  static turn { "turn" }
+  static capHeight { "cap" }
+  static zeroAdvanceMeasure { "ch" }
+  static fontSize { "em" }
+  static rootFontSize { "rem" }
+  static xHeight { "ex" }
+  static lineHeight { "lh" }
+  static rootLineHeight { "rlh" }
+  static pixels { "px" }
+  static centimeter { "cm" }
+  static millimeter { "mm" }
+  static inch { "in" }
+  static pica { "pc" }
+  static point { "pt" }
+  static percentage { "\%" }
+  static seconds { "s" }
+  static milliseconds { "ms" }
 }
